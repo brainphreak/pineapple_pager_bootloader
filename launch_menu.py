@@ -310,7 +310,7 @@ class LauncherMenu:
 
         # Menu items — centered, no highlight bar, matching Loki menu style
         item_height = 22
-        start_y = 70
+        start_y = 65
         visible_items = min(self.max_visible, len(self.payloads))
 
         # Keep selected item in view
@@ -486,7 +486,7 @@ class LauncherMenu:
                     self.pager.draw_ttf((SCREEN_W - tw) // 2, 28, self.title, title_color, self.title_font, self.title_fs)
 
                 item_height = 22
-                start_y = 70
+                start_y = 65
                 visible = min(self.max_visible, len(menu_items))
 
                 if selected < scroll_offset:
@@ -557,7 +557,7 @@ class LauncherMenu:
         self.pager.draw_ttf((SCREEN_W - tw) // 2, 28, title, title_color, self.title_font, self.title_fs)
 
         # Items
-        start_y = 70
+        start_y = 65
         for i, item in enumerate(items):
             y = start_y + i * 22
             color = selected_color if i == selected else unselected_color

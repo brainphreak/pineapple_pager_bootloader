@@ -11,6 +11,14 @@ A boot launcher menu for the WiFi Pineapple Pager. Launch payloads directly usin
   <img src="screenshots/settings.png" width="380" alt="Settings">
 </p>
 
+The bootloader background automatically matches your active Pineapple Pager UI theme. The screenshots above use the **Circuitry** theme. Here's the same bootloader with the **Wargames** theme:
+
+<p align="center">
+  <img src="screenshots/main_wargames.png" width="380" alt="Wargames Theme">
+</p>
+
+You can also set a custom background in `launcher_config.json` to use your own design regardless of the active Pager theme.
+
 ## What It Does
 
 The bootloader bypasses the Pineapple Pager UI and launches payloads directly using `libpagerctl.so` for LCD rendering. It can run:
