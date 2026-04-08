@@ -228,7 +228,7 @@ class LauncherMenu:
 
         # Background image — config override, or active pager theme default
         bg = self.config.get('bg_image')
-        if bg:
+        if bg and os.path.isfile(resolve_path(bg)):
             self.bg_image = resolve_path(bg)
         else:
             self.bg_image = get_active_theme_bg()
