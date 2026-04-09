@@ -171,7 +171,6 @@ Only payloads that are installed on the device will appear in the menu.
 
 - **Author**: brAinphreAk
 - **WiFi Pineapple Pager**: Hak5
-- **pagerctl**: libpagerctl.so by Hak5
 
 ## License
 
