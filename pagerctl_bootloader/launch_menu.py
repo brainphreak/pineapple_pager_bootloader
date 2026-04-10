@@ -267,6 +267,21 @@ class LauncherMenu:
         else:
             self.payloads = discover_payloads()
 
+        # Load favorites from settings
+        self.favorites = load_settings().get('favorites', [])
+
+        # Sort: favorites first (in order), then the rest
+        fav_payloads = []
+        non_fav_payloads = []
+        for p in self.payloads:
+            if p['path'] in self.favorites:
+                fav_payloads.append(p)
+            else:
+                non_fav_payloads.append(p)
+        # Maintain favorites order
+        fav_payloads.sort(key=lambda p: self.favorites.index(p['path']) if p['path'] in self.favorites else 999)
+        self.payloads = fav_payloads + non_fav_payloads
+
         # Add settings, exit, and shutdown as last options
         self.payloads.append(SETTINGS_ENTRY)
         self.payloads.append(PAGER_UI_ENTRY)
@@ -337,9 +352,11 @@ class LauncherMenu:
             is_selected = idx == self.selected
 
             color = selected_color if is_selected else unselected_color
-            # Center text on screen
-            tw = self.pager.ttf_width(payload['name'], self.font, self.item_fs)
-            self.pager.draw_ttf((SCREEN_W - tw) // 2, y, payload['name'], color, self.font, self.item_fs)
+            # Add star for favorites
+            is_fav = payload.get('path', '') in self.favorites
+            label = f"* {payload['name']}" if is_fav else payload['name']
+            tw = self.pager.ttf_width(label, self.font, self.item_fs)
+            self.pager.draw_ttf((SCREEN_W - tw) // 2, y, label, color, self.font, self.item_fs)
 
         # Scroll indicators
         if self.scroll_offset > 0:
@@ -450,19 +467,38 @@ class LauncherMenu:
                 self.selected = (self.selected + 1) % len(self.payloads)
                 self._beep()
                 self.draw()
+            elif button & self.pager.BTN_RIGHT:
+                # Toggle favorite on current payload
+                payload = self.payloads[self.selected]
+                path = payload.get('path', '')
+                if path and not path.startswith('__'):
+                    if path in self.favorites:
+                        self.favorites.remove(path)
+                    else:
+                        self.favorites.append(path)
+                    s = load_settings()
+                    s['favorites'] = self.favorites
+                    save_settings(s)
+                    self._beep()
+                    self.draw()
             elif button & self.pager.BTN_A:
                 self._beep_select()
                 return self.payloads[self.selected]
 
     def _run_category_view(self):
         """Run with category navigation."""
-        categories = group_by_category(
-            [p for p in self.payloads if p.get('path') not in
+        all_payloads = [p for p in self.payloads if p.get('path') not in
              ('__pager_service__', '__settings__', '__shutdown__', '__restart__')]
-        )
+        categories = group_by_category(all_payloads)
         cat_names = sorted(categories.keys())
-        # Build menu: categories + system items
-        menu_items = [{"name": cat, "path": "__category__"} for cat in cat_names]
+
+        # Add Favorites category at top if there are any
+        fav_payloads = [p for p in all_payloads if p.get('path') in self.favorites]
+        menu_items = []
+        if fav_payloads:
+            menu_items.append({"name": "Favorites", "path": "__category__"})
+            categories["Favorites"] = fav_payloads
+        menu_items.extend([{"name": cat, "path": "__category__"} for cat in cat_names])
         menu_items.append(SETTINGS_ENTRY)
         menu_items.append(PAGER_UI_ENTRY)
         menu_items.append(SHUTDOWN_ENTRY)
