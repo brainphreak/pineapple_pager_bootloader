@@ -371,7 +371,7 @@ class LauncherMenu:
         selected = 0
         scroll_offset = 0
         max_vis = self.max_visible
-        items = list(payloads) + [{"name": "Back", "path": "__back__"}]
+        items = list(payloads)
 
         while True:
             # Draw with scrolling — use category bg if set, else main bg
@@ -751,7 +751,7 @@ stop_service() {
         sound_label = "Sound: ON" if self.sound_enabled else "Sound: OFF"
         cat_label = "Categories: ON" if self.category_view else "Categories: OFF"
         boot_label = "Boot on Start: ON" if boot_enabled else "Boot on Start: OFF"
-        items = [sound_label, cat_label, boot_label, "Back"]
+        items = [sound_label, cat_label, boot_label]
 
         for i, item in enumerate(items):
             y = items_start_y + i * 22
@@ -765,7 +765,7 @@ stop_service() {
     def show_settings(self):
         """Show the settings submenu with brightness, sound, categories, and boot toggle."""
         selected = 0  # 0=brightness, 1=sound, 2=categories, 3=boot, 4=back
-        num_items = 5
+        num_items = 4  # brightness + sound + categories + boot
         brightness = self.pager.get_brightness()
         if brightness < 0:
             brightness = 80
@@ -819,9 +819,6 @@ stop_service() {
                             self._show_message("Boot enabled")
                         else:
                             self._show_message("Failed to enable")
-                elif selected == 4:
-                    self._beep_select()
-                    return
             elif button & self.pager.BTN_B:
                 self._beep()
                 return
